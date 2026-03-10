@@ -1,0 +1,25 @@
+{
+    "name": "seapm-frontend",
+    "version": "1.0.0",
+    "description": "Employee Task Overload and Burnout Detection System - Frontend",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint"
+    },
+    "dependencies": {
+        "chart.js": "^4.4.1",
+        "date-fns": "^4.1.0",
+        "next": "14.0.4",
+        "react": "^18.2.0",
+        "react-chartjs-2": "^5.2.0",
+        "react-dom": "^18.2.0",
+        "socket.io-client": "^4.8.3"
+    },
+    "devDependencies": {
+        "eslint": "^8.56.0",
+        "eslint-config-next": "14.0.4"
+    }
+}
