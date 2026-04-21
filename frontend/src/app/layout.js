@@ -3,7 +3,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import { SocketProvider } from '@/context/SocketContext';
 
 export const metadata = {
-    title: 'SEAPM - Employee Task Overload & Burnout Detection System',
+    title: 'OverloadX - Employee Task Overload & Burnout Detection System',
     description: 'Monitor employee workload, detect burnout risks, and optimize task distribution for better team performance.',
     keywords: 'employee management, burnout detection, workload analysis, task management, HR system',
 };

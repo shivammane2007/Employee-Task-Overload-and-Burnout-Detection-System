@@ -91,7 +91,7 @@ export default function DashboardLayout({ children }) {
             {/* Sidebar */}
             <aside className={`dashboard-sidebar ${sidebarOpen ? 'open' : ''}`}>
                 <div className="sidebar-brand">
-                    <h1>SEAPM</h1>
+                    <h1>OverloadX</h1>
                     <span>Burnout Detection System</span>
                 </div>
 

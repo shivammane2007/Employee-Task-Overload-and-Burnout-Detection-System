@@ -228,7 +228,7 @@ export default function HomePage() {
                 `}</style>
 
                 <nav className="landing-nav">
-                    <div className="landing-logo">SEAPM</div>
+                    <div className="landing-logo">OverloadX</div>
                     <div className="landing-nav-links">
                         <Link href="/login">Login</Link>
                         <Link href="/register" className="btn-white">Get Started</Link>
@@ -239,7 +239,7 @@ export default function HomePage() {
                     <div className="landing-hero-content">
                         <h1>Prevent Employee Burnout Before It Happens</h1>
                         <p>
-                            SEAPM monitors workload, analyzes task patterns, and alerts managers
+                            OverloadX monitors workload, analyzes task patterns, and alerts managers
                             when employees are at risk — helping teams stay healthy and productive.
                         </p>
                         <div className="hero-buttons">

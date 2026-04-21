@@ -52,7 +52,7 @@ export default function LoginPage() {
         <div className="auth-page">
             <div className="auth-card">
                 <div className="auth-header">
-                    <div className="auth-logo">SEAPM</div>
+                    <div className="auth-logo">OverloadX</div>
                     <h1 className="auth-title">Welcome back</h1>
                     <p className="auth-subtitle">Sign in to your account to continue</p>
                 </div>

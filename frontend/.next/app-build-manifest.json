@@ -16,6 +16,26 @@
       "static/chunks/main-app.js",
       "static/chunks/app/login/page.js"
     ],
+    "/admin/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/page.js"
+    ],
+    "/admin/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/layout.js"
+    ],
+    "/manager/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/manager/page.js"
+    ],
+    "/manager/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/manager/layout.js"
+    ],
     "/employee/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -31,10 +51,25 @@
       "static/chunks/main-app.js",
       "static/chunks/app/employee/tasks/page.js"
     ],
-    "/employee/workload/page": [
+    "/admin/users/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/employee/workload/page.js"
+      "static/chunks/app/admin/users/page.js"
+    ],
+    "/manager/team/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/manager/team/page.js"
+    ],
+    "/manager/reports/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/manager/reports/page.js"
+    ],
+    "/manager/tasks/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/manager/tasks/page.js"
     ]
   }
 }
