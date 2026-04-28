@@ -1,250 +1,117 @@
-# SEAPM - Employee Task Overload and Burnout Detection System
+# 🛡️ SEAPM: Employee Task Overload & Burnout Detection System
 
-A comprehensive web application for monitoring employee workload, detecting burnout risks, and optimizing task distribution for better team performance.
+[![Licence](https://img.shields.io/github/license/shivammane2007/Employee-Task-Overload-and-Burnout-Detection-System?style=for-the-badge)](LICENSE)
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-green?style=for-the-badge&logo=node.js)](https://nodejs.org/)
+[![SQLite](https://img.shields.io/badge/Database-SQLite-blue?style=for-the-badge&logo=sqlite)](https://sqlite.org/)
 
-## 🌟 Features
+**SEAPM** (Smart Employee Analytics & Performance Management) is a high-end, data-driven platform designed to prioritize employee wellbeing while optimizing organizational productivity. By leveraging advanced workload scoring and longitudinal burnout detection algorithms, SEAPM provides actionable insights to prevent overwork before it impacts team health.
 
-### For Employees
-- **Personal Dashboard**: View your current workload score, task breakdown, and trends
-- **Task Management**: Track, update, and complete assigned tasks
-- **Workload Analysis**: Understand your workload components and burnout risk
-- **Alerts & Notifications**: Receive proactive alerts about high workload or approaching deadlines
+---
 
-### For Managers
-- **Team Overview**: Monitor all team members' workload at a glance
-- **Risk Detection**: Identify employees at high burnout risk
-- **Task Assignment**: Create and assign tasks to team members
-- **Team Reports**: View detailed analytics and trends for your team
+## 🏛️ System Architecture
 
-### For Administrators
-- **Organization Dashboard**: Organization-wide workload analytics
-- **User Management**: Create, edit, and manage all users
-- **System Configuration**: Adjust thresholds and system settings
-- **Department Reports**: Compare workload across departments
+SEAPM follows a modern decoupled architecture designed for speed and clarity:
 
-## 🛠️ Tech Stack
-
-### Backend
-- **Runtime**: Node.js with Express.js
-- **Database**: PostgreSQL
-- **Authentication**: JWT (JSON Web Tokens)
-- **Security**: bcrypt, helmet, rate limiting
-
-### Frontend
-- **Framework**: Next.js 14 (React)
-- **Styling**: Custom CSS Design System
-- **Charts**: Chart.js with react-chartjs-2
-- **State Management**: React Context API
-
-## 📁 Project Structure
-
+```mermaid
+graph TD
+    User((User)) <--> Frontend[Next.js 14 Frontend]
+    Frontend <--> API[Express.js API Layer]
+    
+    subgraph "Backend Core"
+        API <--> WE[Workload Engine]
+        API <--> BD[Burnout Detector]
+        WE <--> DB[(SQLite DB)]
+        BD <--> DB
+    end
+    
+    WE -- calculates --> Scores[Workload Scores]
+    BD -- assesses --> Risks[Burnout Risks]
 ```
-SEAPM/
-├── backend/
-│   ├── config/
-│   │   └── db.js              # Database configuration
-│   ├── middleware/
-│   │   ├── auth.js            # JWT authentication
-│   │   └── roleCheck.js       # Role-based access control
-│   ├── routes/
-│   │   ├── auth.js            # Authentication endpoints
-│   │   ├── users.js           # User management
-│   │   ├── tasks.js           # Task CRUD operations
-│   │   ├── workload.js        # Workload analysis
-│   │   ├── alerts.js          # Notification management
-│   │   ├── reports.js         # Analytics and reports
-│   │   └── config.js          # System configuration
-│   ├── services/
-│   │   ├── workloadEngine.js  # Workload scoring algorithm
-│   │   ├── burnoutDetector.js # Burnout risk detection
-│   │   └── alertService.js    # Alert generation
-│   ├── utils/
-│   │   └── helpers.js         # Utility functions
-│   ├── server.js              # Express server entry point
-│   ├── package.json
-│   └── .env.example
-│
-├── frontend/
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── (auth)/        # Auth pages (login, register)
-│   │   │   ├── employee/      # Employee dashboard
-│   │   │   ├── manager/       # Manager dashboard
-│   │   │   ├── admin/         # Admin dashboard
-│   │   │   ├── layout.js      # Root layout
-│   │   │   ├── page.js        # Landing page
-│   │   │   └── globals.css    # Design system
-│   │   ├── components/
-│   │   │   └── layout/        # Layout components
-│   │   ├── context/
-│   │   │   └── AuthContext.js # Auth state management
-│   │   └── lib/
-│   │       └── api.js         # API service layer
-│   ├── package.json
-│   ├── next.config.js
-│   └── .env.example
-│
-└── database/
-    └── schema.sql             # PostgreSQL schema
-```
+
+---
+
+## ✨ Key Features
+
+### 👤 For Employees
+*   **Intelligent Dashboard**: Real-time visualization of workload components and risk trends.
+*   **Smart Task Tracking**: Interactive task management with automatic impact calculation.
+*   **Wellbeing Alerts**: Proactive notifications when workload reaches critical thresholds.
+*   **Predictive Assessment**: Personalized burnout risk evaluation based on recent work patterns.
+
+### 👥 For Managers
+*   **Team Pulse Overview**: Monitor team-wide workload distribution at a glance.
+*   **High-Risk Identification**: Instant detection of team members approaching burnout.
+*   **Strategic Redistribution**: Data-driven task assignment to balance load across the team.
+*   **Performance Analytics**: Historical trends and performance correlate for proactive management.
+
+### 🔐 For Administrators
+*   **Enterprise Insights**: Organization-wide health metrics and departmental comparisons.
+*   **Global Configuration**: Fine-tune workload thresholds and scoring weights.
+*   **Security & Audit**: Comprehensive user management with role-based access control (RBAC).
+
+---
+
+## 🧠 Core Intelligence
+
+### 📊 Workload Scoring Engine
+The system calculates a normalized **Workload Score (0-100)** using a multi-factor weighted algorithm:
+
+| Factor | Weight | Description |
+| :--- | :--- | :--- |
+| **Task Volume** | 25% | Number of active/pending tasks relative to capacity. |
+| **Priority Load** | 25% | Intensity of high-priority responsibilities. |
+| **Deadline Pressure** | 25% | Proximity and clustering of upcoming deadlines (30pts for overdue, 15pts for due soon). |
+| **Capacity Hours** | 25% | Estimated weekly effort vs. the 40-hour standard threshold. |
+
+> [!TIP]
+> **Risk Levels**: `Low (<40)`, `Medium (40-69)`, `High (>=70)`
+
+### 🔥 Burnout Detection Logic
+Unlike static metrics, the **Burnout Risk Assessment** analyzes longitudinal patterns over a rolling 7-day window:
+1.  **Persistence**: Tracks consecutive days spent in "High Risk" workload territory.
+2.  **Trend-line**: Identifies worsening workload directions (Score ∆ > 20).
+3.  **Backlog Build-up**: Monitors accumulation of overdue tasks.
+4.  **Clustering**: Detects "deadline storms" (multiple tasks due within a 72-hour window).
+
+---
+
+## 🎨 Design Philosophy
+
+SEAPM features a **Premium Custom Design System** built from the ground up for clarity and focus:
+*   **Cinematic UI**: Vibrant, harmonious color palettes (HSL-based tokens).
+*   **Data Visualization**: Custom Chart.js integrations for intuitive performance tracking.
+*   **Glassmorphism & Depth**: Subtle shadows and elevated surfaces for a modern, tactile feel.
+*   **Responsive Precision**: Liquid layouts optimized for seamless transitions between desktop and tablet.
+
+---
+
+## 🛠️ Technology Stack
+
+| Layer | Technologies |
+| :--- | :--- |
+| **Frontend** | Next.js 14, React, Context API, Chart.js, Vanilla CSS Design System |
+| **Backend** | Node.js, Express.js, JWT, bcrypt, Helmet Security |
+| **Database** | SQLite (Fast, local-first development with persistence) |
+| **DevOps** | NPM, Git, Environment-based Configuration |
+
+---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 18+ installed
-- PostgreSQL 14+ installed and running
-- npm or yarn package manager
+*   Node.js 18.x or higher
+*   NPM 9.x or higher
 
-### Database Setup
-
-1. Create a PostgreSQL database:
-```sql
-CREATE DATABASE seapm;
-```
-
-2. Run the schema file:
+### 1. Repository Setup
 ```bash
-psql -U postgres -d seapm -f database/schema.sql
+git clone https://github.com/shivammane2007/Employee-Task-Overload-and-Burnout-Detection-System.git
+cd Employee-Task-Overload-and-Burnout-Detection-System
 ```
 
-### Backend Setup
-
-1. Navigate to the backend directory:
+### 2. Backend Initialization (API)
 ```bash
 cd backend
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Create environment file:
-```bash
-cp .env.example .env
-```
-
-4. Update `.env` with your configuration:
-```env
-PORT=5000
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=seapm
-DB_USER=postgres
-DB_PASSWORD=your_password
-JWT_SECRET=your_secret_key
-JWT_EXPIRES_IN=7d
-FRONTEND_URL=http://localhost:3000
-```
-
-5. Start the server:
-```bash
-npm run dev
-```
-
-### Frontend Setup
-
-1. Navigate to the frontend directory:
-```bash
-cd frontend
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Create environment file:
-```bash
-cp .env.example .env
-```
-
-4. Start the development server:
-```bash
-npm run dev
-```
-
-5. Open [http://localhost:3000](http://localhost:3000) in your browser
-
-## Demo Credentials
-
-After running the schema with seed data:
-
-| Role     | Email                | Password |
-|----------|---------------------|----------|
-| Admin    | admin@company.com   | password |
-| Manager  | manager@company.com | password |
-| Employee | alice@company.com   | password |
-| Employee | bob@company.com     | password |
-
-## 📊 Workload Scoring Algorithm
-
-The workload score (0-100) is calculated based on:
-
-1. **Task Count Score** (25%): Number of active tasks relative to threshold
-2. **Priority Score** (25%): Weighted sum of task priorities
-3. **Deadline Score** (30%): Proximity of upcoming deadlines
-4. **Hours Score** (20%): Estimated weekly hours
-
-### Risk Levels
-- **Low Risk** (0-40): Manageable workload
-- **Medium Risk** (41-70): Elevated workload, monitor closely
-- **High Risk** (71-100): Critical, intervention needed
-
-## 🔥 Burnout Detection
-
-The burnout detection system analyzes:
-- Consecutive high workload days
-- Deadline clustering
-- Weekly hours worked
-- Workload trend direction
-- Overdue task count
-
-## 📡 API Endpoints
-
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - User login
-- `GET /api/auth/me` - Get current user
-- `PUT /api/auth/profile` - Update profile
-- `PUT /api/auth/password` - Change password
-
-### Users (Admin)
-- `GET /api/users` - List all users
-- `POST /api/users` - Create user
-- `PUT /api/users/:id` - Update user
-- `DELETE /api/users/:id` - Deactivate user
-
-### Tasks
-- `GET /api/tasks` - List tasks
-- `POST /api/tasks` - Create task
-- `PUT /api/tasks/:id` - Update task
-- `PUT /api/tasks/:id/progress` - Update progress
-- `PUT /api/tasks/:id/status` - Update status
-
-### Workload
-- `GET /api/workload/score` - Get current score
-- `GET /api/workload/history` - Get score history
-- `GET /api/workload/burnout` - Get burnout assessment
-- `POST /api/workload/calculate` - Recalculate score
-
-### Reports
-- `GET /api/reports/dashboard` - Dashboard data
-- `GET /api/reports/workload` - Workload trends
-- `GET /api/reports/burnout` - Burnout statistics
-- `GET /api/reports/team` - Team performance
-
-## 🔒 Security Features
-
-- JWT-based authentication
-- Password hashing with bcrypt
-- Role-based access control
-- Rate limiting
-- Input validation
-- CORS configuration
-- Helmet security headers
-
-## 📈 Future Enhancements
 
 - [ ] Email notifications
 - [ ] Slack/Teams integration
