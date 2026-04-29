@@ -1,14 +1,16 @@
 # dependencies
-node_modules
-/.pnp
+node_modules/
+**/node_modules/
+.pnp
 .pnp.js
 
 # testing
 /coverage
 
 # next.js
-/.next/
-/out/
+.next/
+**/.next/
+out/
 build/
 
 # misc
