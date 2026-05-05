@@ -91,8 +91,11 @@ export default function DashboardLayout({ children }) {
             {/* Sidebar */}
             <aside className={`dashboard-sidebar ${sidebarOpen ? 'open' : ''}`}>
                 <div className="sidebar-brand">
-                    <h1>OverloadX</h1>
-                    <span>Burnout Detection System</span>
+                    <div className="sidebar-brand-icon">⚡</div>
+                    <div>
+                        <h1>OverloadX</h1>
+                        <span>Burnout Detection</span>
+                    </div>
                 </div>
 
                 <nav className="sidebar-nav">
@@ -130,8 +133,8 @@ export default function DashboardLayout({ children }) {
             {/* Main Content */}
             <main className="dashboard-main">
                 {/* Header */}
-                <header className="dashboard-header">
-                    <div className="flex items-center gap-md">
+                <header className="dashboard-header" style={{ overflow: 'visible', position: 'relative', zIndex: 100 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                         <button
                             className="btn btn-ghost btn-icon"
                             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -139,34 +142,69 @@ export default function DashboardLayout({ children }) {
                         >
                             ☰
                         </button>
+                        {/* Greeting */}
                         <div>
-                            <div className="font-semibold">{user.name}</div>
-                            <div className="text-xs text-muted" style={{ textTransform: 'capitalize' }}>
-                                {user.role} {user.department && `• ${user.department}`}
+                            <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)', lineHeight: 1.3 }}>
+                                👋 Welcome back, {user.name.split(' ')[0]}
+                            </div>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                                {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
                             </div>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-md">
-                        {/* Original Alerts Button (optional to keep side by side or comment out, but let's replace it with the new comprehensive notification bell) */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                         <NotificationBell />
 
-                        {/* User Menu */}
-                        <div className="flex items-center gap-sm">
-                            <div
-                                style={{
-                                    width: 36,
-                                    height: 36,
-                                    background: 'var(--primary-100)',
-                                    borderRadius: '50%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontWeight: 600,
-                                    color: 'var(--primary-700)'
-                                }}
-                            >
+                        {/* Divider */}
+                        <div style={{ width: 1, height: 28, background: 'var(--gray-200)' }} />
+
+                        {/* User Pill */}
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.625rem',
+                            padding: '0.375rem 0.75rem 0.375rem 0.375rem',
+                            borderRadius: '9999px',
+                            border: '1px solid var(--gray-200)',
+                            background: 'var(--gray-50)',
+                            cursor: 'default',
+                            transition: 'all 0.2s',
+                        }}
+                        onMouseEnter={e => {
+                            e.currentTarget.style.background = 'var(--primary-50)';
+                            e.currentTarget.style.borderColor = 'var(--primary-200)';
+                        }}
+                        onMouseLeave={e => {
+                            e.currentTarget.style.background = 'var(--gray-50)';
+                            e.currentTarget.style.borderColor = 'var(--gray-200)';
+                        }}
+                        >
+                            {/* Avatar */}
+                            <div style={{
+                                width: 30,
+                                height: 30,
+                                background: 'linear-gradient(135deg, var(--primary-500), var(--primary-700))',
+                                borderRadius: '50%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontWeight: 700,
+                                color: '#fff',
+                                fontSize: '0.8rem',
+                                flexShrink: 0,
+                                boxShadow: '0 2px 8px rgba(99,102,241,0.35)',
+                            }}>
                                 {user.name.charAt(0).toUpperCase()}
+                            </div>
+                            {/* Name + Role */}
+                            <div style={{ lineHeight: 1.3 }}>
+                                <div style={{ fontWeight: 600, fontSize: '0.825rem', color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>
+                                    {user.name}
+                                </div>
+                                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'capitalize' }}>
+                                    {user.role}{user.department && ` · ${user.department}`}
+                                </div>
                             </div>
                         </div>
                     </div>

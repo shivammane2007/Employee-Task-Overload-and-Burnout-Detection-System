@@ -1,6 +1,5 @@
 'use client';
 
-<<<<<<< HEAD
 import { useState, useEffect } from 'react';
 import { configAPI } from '@/lib/api';
 
@@ -86,9 +85,6 @@ export default function AdminSettingsPage() {
         );
     }
 
-=======
-export default function AdminSettingsPage() {
->>>>>>> 886ef1d9b39e16d77f35cc5693beb1684b91f17d
     return (
         <div>
             <div className="page-header">
@@ -96,7 +92,6 @@ export default function AdminSettingsPage() {
                 <p className="page-subtitle">Configure application algorithms and thresholds</p>
             </div>
 
-<<<<<<< HEAD
             {message.text && (
                 <div className={`alert ${message.type === 'error' ? 'alert-danger' : 'alert-success'} mb-lg`}>
                     {message.text}
@@ -177,15 +172,6 @@ export default function AdminSettingsPage() {
                     </div>
                 );
             })}
-=======
-            <div className="card text-center" style={{ padding: '4rem' }}>
-                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚙️</div>
-                <h3 className="mb-sm">Settings functionality coming soon</h3>
-                <p className="text-muted">
-                    This section will allow admins to configure workload algorithm weights, burnout risk thresholds, and notification preferences.
-                </p>
-            </div>
->>>>>>> 886ef1d9b39e16d77f35cc5693beb1684b91f17d
         </div>
     );
 }

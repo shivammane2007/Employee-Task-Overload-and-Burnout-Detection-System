@@ -1,6 +1,5 @@
 'use client';
 
-<<<<<<< HEAD
 import { useState, useEffect } from 'react';
 import { Bar, Line, Doughnut } from 'react-chartjs-2';
 import {
@@ -128,9 +127,6 @@ export default function AdminReportsPage() {
         ]
     };
 
-=======
-export default function AdminReportsPage() {
->>>>>>> 886ef1d9b39e16d77f35cc5693beb1684b91f17d
     return (
         <div>
             <div className="page-header">
@@ -138,7 +134,6 @@ export default function AdminReportsPage() {
                 <p className="page-subtitle">View system-wide workload and performance analytics</p>
             </div>
 
-<<<<<<< HEAD
             {/* Quick Stats */}
             <div className="grid grid-cols-4 mb-xl">
                 <div className="card stat-card">
@@ -308,14 +303,6 @@ export default function AdminReportsPage() {
                         </div>
                     )}
                 </div>
-=======
-            <div className="card text-center" style={{ padding: '4rem' }}>
-                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📊</div>
-                <h3 className="mb-sm">Organization Reports functionality coming soon</h3>
-                <p className="text-muted">
-                    This section will provide system-wide analytics, department comparisons, and long-term burnout risk trends.
-                </p>
->>>>>>> 886ef1d9b39e16d77f35cc5693beb1684b91f17d
             </div>
         </div>
     );

@@ -155,23 +155,26 @@ function seedDatabase() {
 
     // Insert sample tasks
     const insertTask = db.prepare(`
-        INSERT INTO tasks (title, description, employee_id, created_by, priority, status, deadline, estimated_hours, progress)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO tasks (title, description, employee_id, created_by, priority, status, deadline, estimated_hours, progress, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const nextWeek = new Date();
-    nextWeek.setDate(nextWeek.getDate() + 7);
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
+    const now = new Date();
+    const tomorrow = new Date(); tomorrow.setDate(now.getDate() + 1);
+    const nextWeek = new Date(); nextWeek.setDate(now.getDate() + 7);
+    const yesterday = new Date(); yesterday.setDate(now.getDate() - 1);
+    const fiveDaysAgo = new Date(); fiveDaysAgo.setDate(now.getDate() - 5);
+    const tenDaysAgo = new Date(); tenDaysAgo.setDate(now.getDate() - 10);
+    const fifteenDaysAgo = new Date(); fifteenDaysAgo.setDate(now.getDate() - 15);
 
-    insertTask.run('Complete API Documentation', 'Write comprehensive API docs for all endpoints', 3, 2, 'high', 'in_progress', tomorrow.toISOString(), 8, 40);
-    insertTask.run('Review Pull Request #123', 'Code review for authentication module', 3, 2, 'high', 'pending', tomorrow.toISOString(), 2, 0);
-    insertTask.run('Fix Login Bug', 'Users cannot login with special characters in password', 3, 2, 'high', 'pending', yesterday.toISOString(), 4, 0);
-    insertTask.run('Database Optimization', 'Optimize slow queries in reports module', 4, 2, 'medium', 'pending', nextWeek.toISOString(), 16, 0);
-    insertTask.run('Unit Tests for User Service', 'Write unit tests for user service module', 4, 2, 'medium', 'in_progress', nextWeek.toISOString(), 12, 60);
-    insertTask.run('Update Dependencies', 'Update npm packages to latest versions', 5, 2, 'low', 'completed', yesterday.toISOString(), 2, 100);
+    const fmt = (d) => d.toISOString().replace('T', ' ').slice(0, 19);
+
+    insertTask.run('Complete API Documentation', 'Write comprehensive API docs for all endpoints', 3, 2, 'high', 'in_progress', tomorrow.toISOString(), 8, 40, fmt(tenDaysAgo));
+    insertTask.run('Review Pull Request #123', 'Code review for authentication module', 3, 2, 'high', 'pending', tomorrow.toISOString(), 2, 0, fmt(fiveDaysAgo));
+    insertTask.run('Fix Login Bug', 'Users cannot login with special characters in password', 3, 2, 'high', 'pending', yesterday.toISOString(), 4, 0, fmt(fiveDaysAgo));
+    insertTask.run('Database Optimization', 'Optimize slow queries in reports module', 4, 2, 'medium', 'pending', nextWeek.toISOString(), 16, 0, fmt(tenDaysAgo));
+    insertTask.run('Unit Tests for User Service', 'Write unit tests for user service module', 4, 2, 'medium', 'in_progress', nextWeek.toISOString(), 12, 60, fmt(fifteenDaysAgo));
+    insertTask.run('Update Dependencies', 'Update npm packages to latest versions', 5, 2, 'low', 'completed', yesterday.toISOString(), 2, 100, fmt(yesterday));
 
     // Insert sample workload scores
     const insertWorkload = db.prepare(`

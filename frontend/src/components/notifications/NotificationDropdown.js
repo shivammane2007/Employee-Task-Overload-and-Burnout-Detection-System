@@ -2,90 +2,209 @@
 
 import { formatDistanceToNow } from 'date-fns';
 
-export default function NotificationDropdown({ notifications, onMarkRead, onMarkAllRead, unreadCount, onClose }) {
+const TYPE_CONFIG = {
+    TASK_ASSIGNED: { icon: '📝', color: '#6366f1', bg: 'rgba(99,102,241,0.1)', label: 'Task Assigned' },
+    TASK_UPDATED:  { icon: '🔄', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)',  label: 'Task Updated'  },
+    TASK_COMPLETED:{ icon: '✅', color: '#10b981', bg: 'rgba(16,185,129,0.1)',  label: 'Completed'     },
+    TASK_OVERDUE:  { icon: '⚠️', color: '#ef4444', bg: 'rgba(239,68,68,0.1)',   label: 'Overdue'       },
+    default:       { icon: '🔔', color: '#6366f1', bg: 'rgba(99,102,241,0.1)', label: 'Notification'  },
+};
 
-    const getNotificationIcon = (type) => {
-        switch (type) {
-            case 'TASK_ASSIGNED':
-                return '📝';
-            case 'TASK_UPDATED':
-                return '🔄';
-            case 'TASK_COMPLETED':
-                return '✅';
-            case 'TASK_OVERDUE':
-                return '⚠️';
-            default:
-                return '🔔';
-        }
-    };
+export default function NotificationDropdown({ notifications, onMarkRead, onMarkAllRead, unreadCount, onClose }) {
+    const getConfig = (type) => TYPE_CONFIG[type] || TYPE_CONFIG.default;
 
     return (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg overflow-hidden z-50 border border-gray-100 ring-1 ring-black ring-opacity-5">
-            <div className="flex justify-between items-center px-4 py-3 bg-gray-50 border-b border-gray-100">
-                <h3 className="text-sm font-semibold text-gray-800">Notifications</h3>
-                {unreadCount > 0 && (
+        <div style={{
+            position: 'absolute',
+            top: 'calc(100% + 10px)',
+            right: 0,
+            width: 380,
+            background: 'var(--surface)',
+            border: '1px solid var(--border-color)',
+            borderRadius: 'var(--radius-lg)',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.15), 0 4px 16px rgba(0,0,0,0.08)',
+            overflow: 'hidden',
+            zIndex: 9999,
+        }}>
+            {/* Header */}
+            <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '1rem 1.25rem',
+                borderBottom: '1px solid var(--border-color)',
+                background: 'linear-gradient(135deg, rgba(99,102,241,0.05) 0%, rgba(139,92,246,0.05) 100%)',
+            }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '1.1rem' }}>🔔</span>
+                    <span style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)' }}>
+                        Notifications
+                    </span>
+                    {unreadCount > 0 && (
+                        <span style={{
+                            background: '#ef4444',
+                            color: '#fff',
+                            borderRadius: '999px',
+                            fontSize: '0.7rem',
+                            fontWeight: 700,
+                            padding: '0 6px',
+                            lineHeight: '18px',
+                            minWidth: 18,
+                            textAlign: 'center',
+                        }}>
+                            {unreadCount > 99 ? '99+' : unreadCount}
+                        </span>
+                    )}
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                    {unreadCount > 0 && (
+                        <button
+                            onClick={onMarkAllRead}
+                            style={{
+                                background: 'none',
+                                border: 'none',
+                                fontSize: '0.75rem',
+                                color: 'var(--primary-600)',
+                                cursor: 'pointer',
+                                fontWeight: 600,
+                                padding: '4px 8px',
+                                borderRadius: 'var(--radius-sm)',
+                                transition: 'background 0.2s',
+                            }}
+                            onMouseEnter={e => e.target.style.background = 'rgba(99,102,241,0.08)'}
+                            onMouseLeave={e => e.target.style.background = 'none'}
+                        >
+                            Mark all read
+                        </button>
+                    )}
                     <button
-                        onClick={onMarkAllRead}
-                        className="text-xs text-blue-600 hover:text-blue-800 font-medium transition-colors"
+                        onClick={onClose}
+                        style={{
+                            background: 'none',
+                            border: 'none',
+                            width: 28,
+                            height: 28,
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            color: 'var(--text-muted)',
+                            fontSize: '1rem',
+                            transition: 'background 0.2s, color 0.2s',
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'var(--gray-100)'; e.currentTarget.style.color = 'var(--text-primary)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                        aria-label="Close notifications"
                     >
-                        Mark all as read
+                        ✕
                     </button>
-                )}
+                </div>
             </div>
 
-            <div className="max-h-96 overflow-y-auto">
+            {/* Notification List */}
+            <div style={{ maxHeight: 380, overflowY: 'auto' }}>
                 {notifications.length === 0 ? (
-                    <div className="px-4 py-6 text-sm text-center text-gray-500">
-                        No notifications yet
+                    <div style={{
+                        padding: '3rem 1.5rem',
+                        textAlign: 'center',
+                        color: 'var(--text-muted)',
+                    }}>
+                        <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>🔕</div>
+                        <div style={{ fontWeight: 600, marginBottom: '0.25rem', color: 'var(--text-secondary)' }}>
+                            All caught up!
+                        </div>
+                        <div style={{ fontSize: '0.8rem' }}>No notifications yet</div>
                     </div>
                 ) : (
-                    <ul className="divide-y divide-gray-100">
-                        {notifications.map((notification) => (
-                            <li
-                                key={notification.id}
-                                className={`px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors ${notification.is_read ? 'opacity-70 bg-white' : 'bg-blue-50/30'}`}
-                                onClick={() => {
-                                    if (!notification.is_read) onMarkRead(notification.id);
-                                    // Optional: onClose(); or router.push('/tasks/' + notification.task_id)
-                                }}
-                            >
-                                <div className="flex space-x-3">
-                                    <div className="flex-shrink-0 text-xl mt-1">
-                                        {getNotificationIcon(notification.type)}
+                    <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+                        {notifications.map((notification) => {
+                            const cfg = getConfig(notification.type);
+                            return (
+                                <li
+                                    key={notification.id}
+                                    onClick={() => { if (!notification.is_read) onMarkRead(notification.id); }}
+                                    style={{
+                                        display: 'flex',
+                                        gap: '0.75rem',
+                                        padding: '0.875rem 1.25rem',
+                                        borderBottom: '1px solid var(--border-color)',
+                                        cursor: 'pointer',
+                                        background: notification.is_read ? 'transparent' : 'rgba(99,102,241,0.04)',
+                                        transition: 'background 0.15s',
+                                        position: 'relative',
+                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.background = 'var(--gray-50)'}
+                                    onMouseLeave={e => e.currentTarget.style.background = notification.is_read ? 'transparent' : 'rgba(99,102,241,0.04)'}
+                                >
+                                    {/* Icon bubble */}
+                                    <div style={{
+                                        flexShrink: 0,
+                                        width: 38,
+                                        height: 38,
+                                        borderRadius: '50%',
+                                        background: cfg.bg,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontSize: '1rem',
+                                        marginTop: 2,
+                                    }}>
+                                        {cfg.icon}
                                     </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-sm text-gray-800 font-medium">
+
+                                    {/* Content */}
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                        <p style={{
+                                            fontSize: '0.825rem',
+                                            fontWeight: notification.is_read ? 400 : 600,
+                                            color: 'var(--text-primary)',
+                                            marginBottom: '0.25rem',
+                                            lineHeight: 1.4,
+                                        }}>
                                             {notification.message}
                                         </p>
-                                        <div className="flex justify-between items-center mt-1">
-                                            <p className="text-xs text-gray-500 truncate">
-                                                From: {notification.sender_name}
-                                            </p>
-                                            <p className="text-xs text-gray-400 whitespace-nowrap">
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                                                From: <strong>{notification.sender_name}</strong>
+                                            </span>
+                                            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
                                                 {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
-                                            </p>
+                                            </span>
                                         </div>
                                     </div>
+
+                                    {/* Unread dot */}
                                     {!notification.is_read && (
-                                        <div className="flex-shrink-0 self-center">
-                                            <span className="h-2 w-2 bg-blue-600 rounded-full inline-block"></span>
-                                        </div>
+                                        <div style={{
+                                            position: 'absolute',
+                                            left: 6,
+                                            top: '50%',
+                                            transform: 'translateY(-50%)',
+                                            width: 6,
+                                            height: 6,
+                                            borderRadius: '50%',
+                                            background: '#6366f1',
+                                        }} />
                                     )}
-                                </div>
-                            </li>
-                        ))}
+                                </li>
+                            );
+                        })}
                     </ul>
                 )}
             </div>
 
+            {/* Footer */}
             {notifications.length > 0 && (
-                <div className="px-4 py-2 border-t border-gray-100 bg-gray-50 text-center">
-                    <button
-                        onClick={onClose}
-                        className="text-xs font-medium text-gray-600 hover:text-gray-900"
-                    >
-                        Close
-                    </button>
+                <div style={{
+                    padding: '0.75rem 1.25rem',
+                    borderTop: '1px solid var(--border-color)',
+                    textAlign: 'center',
+                    background: 'var(--gray-50)',
+                }}>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                        Showing latest {notifications.length} notifications
+                    </span>
                 </div>
             )}
         </div>
