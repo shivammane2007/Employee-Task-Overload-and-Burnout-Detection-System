@@ -85,7 +85,11 @@ export default function ManagerTasksPage() {
         try {
             const submitData = {
                 ...formData,
-                estimated_hours: parseFloat(formData.estimated_hours)
+                estimated_hours: parseFloat(formData.estimated_hours),
+                // Append end-of-day time if only a date was provided
+                deadline: formData.deadline.includes('T')
+                    ? formData.deadline
+                    : `${formData.deadline}T23:59:00`,
             };
 
             // Convert to int if provided
@@ -334,9 +338,10 @@ export default function ManagerTasksPage() {
                                     <div className="form-group">
                                         <label className="form-label">Deadline</label>
                                         <input
-                                            type="datetime-local"
+                                            type="date"
                                             className="form-input"
                                             value={formData.deadline}
+                                            min={new Date().toISOString().split('T')[0]}
                                             onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
                                             required
                                         />
