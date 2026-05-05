@@ -11,6 +11,7 @@ const { body, param, validationResult } = require('express-validator');
 const db = require('../config/db');
 const { authenticate } = require('../middleware/auth');
 const { requireAdmin } = require('../middleware/roleCheck');
+const workloadEngine = require('../services/workloadEngine');
 
 /**
  * @route   GET /api/config
@@ -183,6 +184,13 @@ router.put('/:key', authenticate, requireAdmin, [
              RETURNING *`,
             [stringValue, req.user.id, key]
         );
+
+        // Trigger global workload recalculation because thresholds might have changed
+        try {
+            await workloadEngine.processAllEmployeesWorkload();
+        } catch (error) {
+            console.error('Workload recalculation error:', error);
+        }
 
         res.json({
             success: true,

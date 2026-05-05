@@ -108,7 +108,7 @@ export default function AdminDashboard() {
             {
                 label: 'Avg Workload',
                 data: orgStats?.departmentBreakdown?.map(d => parseFloat(d.avg_score) || 0) || [],
-                backgroundColor: 'rgba(59, 130, 246, 0.8)'
+                backgroundColor: 'rgba(99, 102, 241, 0.8)'
             },
             {
                 label: 'High Risk Count',
@@ -127,7 +127,7 @@ export default function AdminDashboard() {
                 label: 'Avg Workload',
                 data: workloadReport?.dailyTrend?.map(d => d.avgScore) || [],
                 borderColor: 'rgb(59, 130, 246)',
-                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
                 fill: true,
                 tension: 0.4
             }

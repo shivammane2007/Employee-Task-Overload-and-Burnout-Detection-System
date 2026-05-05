@@ -8,24 +8,40 @@
 const db = require('../config/db');
 
 /**
- * Configuration thresholds
+ * Load configurations dynamically from database
  */
-const CONFIG = {
-    WORKLOAD_HIGH_THRESHOLD: 70,
-    WORKLOAD_MEDIUM_THRESHOLD: 40,
-    MAX_WEEKLY_HOURS: 40,
-    TASK_WEIGHT: 0.25,
-    PRIORITY_WEIGHT: 0.25,
-    DEADLINE_WEIGHT: 0.25,
-    HOURS_WEIGHT: 0.25
-};
+async function loadConfig() {
+    const defaultConfigs = {
+        workload_high_threshold: 70,
+        workload_medium_threshold: 40,
+        max_weekly_hours: 40,
+        task_weight: 0.25,
+        priority_weight: 0.25,
+        deadline_weight: 0.25,
+        hours_weight: 0.25
+    };
+    
+    try {
+        const result = await db.query('SELECT key, value, value_type FROM configurations');
+        const dbConfigs = {};
+        result.rows.forEach(row => {
+            if (row.value_type === 'number') {
+                dbConfigs[row.key] = parseFloat(row.value);
+            }
+        });
+        return { ...defaultConfigs, ...dbConfigs };
+    } catch (err) {
+        console.error('Error loading configs:', err);
+        return defaultConfigs;
+    }
+}
 
 /**
- * Calculate risk level based on score
+ * Calculate risk level based on score and config
  */
-function getRiskLevel(score) {
-    if (score >= CONFIG.WORKLOAD_HIGH_THRESHOLD) return 'high';
-    if (score >= CONFIG.WORKLOAD_MEDIUM_THRESHOLD) return 'medium';
+function getRiskLevel(score, config) {
+    if (score >= config.workload_high_threshold) return 'high';
+    if (score >= config.workload_medium_threshold) return 'medium';
     return 'low';
 }
 
@@ -34,16 +50,21 @@ function getRiskLevel(score) {
  */
 async function processEmployeeWorkload(employeeId) {
     try {
+        const config = await loadConfig();
+        
         // Get task statistics
         const taskResult = await db.query(
             `SELECT 
                 COUNT(*) as total_tasks,
                 SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending_tasks,
                 SUM(CASE WHEN status = 'in_progress' THEN 1 ELSE 0 END) as in_progress_tasks,
-                SUM(CASE WHEN priority = 'high' AND status != 'completed' THEN 1 ELSE 0 END) as high_priority_tasks,
-                SUM(CASE WHEN deadline < datetime('now') AND status != 'completed' THEN 1 ELSE 0 END) as overdue_tasks,
-                SUM(CASE WHEN deadline BETWEEN datetime('now') AND datetime('now', '+3 days') AND status != 'completed' THEN 1 ELSE 0 END) as due_soon_tasks,
-                COALESCE(SUM(CASE WHEN status != 'completed' THEN estimated_hours ELSE 0 END), 0) as pending_hours
+                SUM(CASE WHEN status = 'overdue' THEN 1 ELSE 0 END) as overdue_status_tasks,
+                SUM(CASE WHEN priority = 'high' AND status IN ('pending', 'in_progress', 'overdue') THEN 1 ELSE 0 END) as high_priority_tasks,
+                SUM(CASE WHEN (deadline < datetime('now') OR status = 'overdue') AND status NOT IN ('completed', 'cancelled') THEN 1 ELSE 0 END) as overdue_tasks,
+                SUM(CASE WHEN deadline BETWEEN datetime('now') AND datetime('now', '+3 days') AND status IN ('pending', 'in_progress') THEN 1 ELSE 0 END) as due_soon_tasks,
+                SUM(CASE WHEN status IN ('pending', 'in_progress', 'overdue') THEN 
+                    estimated_hours * (1.0 - (COALESCE(progress, 0) / 100.0)) 
+                ELSE 0 END) as remaining_hours
              FROM tasks
              WHERE employee_id = $1`,
             [employeeId]
@@ -53,27 +74,28 @@ async function processEmployeeWorkload(employeeId) {
         const totalTasks = parseInt(stats.total_tasks) || 0;
         const pendingTasks = parseInt(stats.pending_tasks) || 0;
         const inProgressTasks = parseInt(stats.in_progress_tasks) || 0;
+        const overdueStatusTasks = parseInt(stats.overdue_status_tasks) || 0;
         const highPriorityTasks = parseInt(stats.high_priority_tasks) || 0;
         const overdueTasks = parseInt(stats.overdue_tasks) || 0;
         const dueSoonTasks = parseInt(stats.due_soon_tasks) || 0;
-        const pendingHours = parseFloat(stats.pending_hours) || 0;
+        const remainingHours = parseFloat(stats.remaining_hours) || 0;
 
         // Calculate component scores (0-100)
-        const activeTasks = pendingTasks + inProgressTasks;
-        const taskScore = Math.min(100, activeTasks * 10);
-        const priorityScore = Math.min(100, highPriorityTasks * 20);
-        const deadlineScore = Math.min(100, (overdueTasks * 30) + (dueSoonTasks * 15));
-        const hoursScore = Math.min(100, (pendingHours / CONFIG.MAX_WEEKLY_HOURS) * 100);
+        const activeTasksCount = pendingTasks + inProgressTasks + overdueStatusTasks;
+        const taskScore = Math.min(100, activeTasksCount * 12); // Slightly more weight per task
+        const priorityScore = Math.min(100, highPriorityTasks * 25);
+        const deadlineScore = Math.min(100, (overdueTasks * 40) + (dueSoonTasks * 20));
+        const hoursScore = Math.min(100, (remainingHours / config.max_weekly_hours) * 100);
 
         // Calculate weighted average
         const totalScore = Math.round(
-            (taskScore * CONFIG.TASK_WEIGHT) +
-            (priorityScore * CONFIG.PRIORITY_WEIGHT) +
-            (deadlineScore * CONFIG.DEADLINE_WEIGHT) +
-            (hoursScore * CONFIG.HOURS_WEIGHT)
+            (taskScore * config.task_weight) +
+            (priorityScore * config.priority_weight) +
+            (deadlineScore * config.deadline_weight) +
+            (hoursScore * config.hours_weight)
         );
 
-        const riskLevel = getRiskLevel(totalScore);
+        const riskLevel = getRiskLevel(totalScore, config);
 
         // Save to database
         const today = new Date().toISOString().split('T')[0];
@@ -118,7 +140,7 @@ async function processEmployeeWorkload(employeeId) {
                 highPriority: highPriorityTasks,
                 overdue: overdueTasks,
                 dueSoon: dueSoonTasks,
-                pendingHours
+                pendingHours: remainingHours
             }
         };
 
@@ -238,6 +260,5 @@ module.exports = {
     processEmployeeWorkload,
     processAllEmployeesWorkload,
     getWorkloadHistory,
-    getTeamWorkloadSummary,
-    CONFIG
+    getTeamWorkloadSummary
 };

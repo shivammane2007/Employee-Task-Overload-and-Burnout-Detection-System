@@ -46,7 +46,7 @@ export default function HomePage() {
                 <style jsx>{`
                     .landing-page {
                         min-height: 100vh;
-                        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%);
+                        background: linear-gradient(135deg, #1e3a8a 0%, #6366f1 50%, #60a5fa 100%);
                         color: white;
                     }
                     

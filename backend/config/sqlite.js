@@ -104,8 +104,11 @@ function initDatabase() {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             key TEXT UNIQUE NOT NULL,
             value TEXT NOT NULL,
+            value_type TEXT DEFAULT 'string',
             description TEXT,
             category TEXT,
+            is_editable INTEGER DEFAULT 1,
+            updated_by INTEGER REFERENCES users(id),
             created_at TEXT DEFAULT CURRENT_TIMESTAMP,
             updated_at TEXT DEFAULT CURRENT_TIMESTAMP
         );
@@ -183,14 +186,14 @@ function seedDatabase() {
 
     // Insert configurations
     const insertConfig = db.prepare(`
-        INSERT INTO configurations (key, value, description, category)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO configurations (key, value, value_type, description, category, updated_by)
+        VALUES (?, ?, ?, ?, ?, ?)
     `);
 
-    insertConfig.run('workload_high_threshold', '70', 'Score above this is high risk', 'workload');
-    insertConfig.run('workload_medium_threshold', '40', 'Score above this is medium risk', 'workload');
-    insertConfig.run('max_weekly_hours', '40', 'Standard weekly working hours', 'workload');
-    insertConfig.run('alert_enabled', 'true', 'Enable alert notifications', 'alerts');
+    insertConfig.run('workload_high_threshold', '70', 'number', 'Score above this is high risk', 'workload', 1);
+    insertConfig.run('workload_medium_threshold', '40', 'number', 'Score above this is medium risk', 'workload', 1);
+    insertConfig.run('max_weekly_hours', '40', 'number', 'Standard weekly working hours', 'workload', 1);
+    insertConfig.run('alert_enabled', 'true', 'boolean', 'Enable alert notifications', 'alerts', 1);
 
     console.log('Seed data inserted successfully');
 }

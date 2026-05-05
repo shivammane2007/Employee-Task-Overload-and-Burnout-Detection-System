@@ -104,7 +104,7 @@ export default function ManagerDashboard() {
                 label: 'Avg Workload',
                 data: workloadReport?.dailyTrend?.map(d => d.avgScore) || [],
                 borderColor: 'rgb(59, 130, 246)',
-                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
                 fill: true,
                 tension: 0.4
             }

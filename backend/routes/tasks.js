@@ -400,6 +400,13 @@ router.put('/:id', authenticate, [
             values
         );
 
+        // Trigger workload recalculation
+        try {
+            await workloadEngine.processEmployeeWorkload(taskCheck.rows[0].employee_id);
+        } catch (error) {
+            console.error('Workload recalculation error:', error);
+        }
+
         res.json({
             success: true,
             message: 'Task updated successfully',
@@ -577,6 +584,13 @@ router.put('/:id/status', authenticate, [
             );
         }
 
+        // Trigger workload recalculation
+        try {
+            await workloadEngine.processEmployeeWorkload(taskCheck.rows[0].employee_id);
+        } catch (error) {
+            console.error('Workload recalculation error:', error);
+        }
+
         res.json({
             success: true,
             message: 'Status updated successfully',
@@ -624,6 +638,13 @@ router.delete('/:id', authenticate, [
         }
 
         await db.query('DELETE FROM tasks WHERE id = $1', [taskId]);
+
+        // Trigger workload recalculation
+        try {
+            await workloadEngine.processEmployeeWorkload(taskCheck.rows[0].employee_id);
+        } catch (error) {
+            console.error('Workload recalculation error:', error);
+        }
 
         res.json({
             success: true,
